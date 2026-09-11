@@ -807,19 +807,44 @@
     }
   }
 
-  // 구글 설문지 전송 처리
-  document.getElementById('ord-apply-form').addEventListener('submit', function() {
-    alert("원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
-    setTimeout(() => {
-      this.reset();
-    }, 500);
+  // 구글 설문지 no-cors 백그라운드 전송 (원랜디)
+  document.getElementById('ord-apply-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formEl = this;
+    const formData = new FormData(formEl);
+
+    fetch(formEl.action, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    })
+    .then(() => {
+      alert("원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+      formEl.reset();
+    })
+    .catch(() => {
+      formEl.submit();
+    });
   });
 
-  document.getElementById('lol-apply-form').addEventListener('submit', function() {
-    alert("아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
-    setTimeout(() => {
-      this.reset();
-    }, 500);
+  // 구글 설문지 no-cors 백그라운드 전송 (롤 아레나)
+  document.getElementById('lol-apply-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formEl = this;
+    const formData = new FormData(formEl);
+
+    fetch(formEl.action, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    })
+    .then(() => {
+      alert("아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+      formEl.reset();
+    })
+    .catch(() => {
+      formEl.submit();
+    });
   });
 
   renderOrd();
