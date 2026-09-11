@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>봉솜배 소소내전 통합 플랫폼</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f8fafc;
+      --text-dim: #94a3b8;
+      --primary: #38bdf8;
+      --accent: #f59e0b;
+      --border: #334155;
+      --lol-gold: #c89b3c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 12px 10px;
+      line-height: 1.5;
+      -webkit-tap-highlight-color: transparent;
+      word-break: keep-all;
+    }
+    .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+
+    /* Top Bar & Channel Selector */
+    .top-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #162032;
+      padding: 6px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .game-channels { display: flex; gap: 6px; width: 100%; justify-content: center; }
+    .channel-btn {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 10px 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .channel-btn.active.ord-active {
+      background: #0284c7;
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .channel-btn.active.lol-active {
+      background: #9a7422;
+      color: #fff;
+      border-color: var(--lol-gold);
+    }
+
+    /* Sub Tabs (대시보드 / 룰북) */
+    .sub-nav { display: flex; gap: 6px; margin-top: -2px; }
+    .sub-tab-btn {
+      flex: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      min-height: 40px;
+    }
+    .sub-tab-btn.active {
+      background: #334155;
+      color: #fff;
+      border-color: #64748b;
+    }
+
+    /* Hero */
+    .hero {
+      border-radius: 12px;
+      padding: 20px 14px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    .hero.ord-theme {
+      background: linear-gradient(135deg, #1e1b4b, #312e81);
+      border: 1px solid #4338ca;
+    }
+    .hero.lol-theme {
+      background: linear-gradient(135deg, #091428, #0a323c);
+      border: 1px solid #1e4b5f;
+    }
+    .hero h1 { font-size: 1.35rem; color: #fbbf24; margin-bottom: 4px; }
+    .hero p { color: #cbd5e1; font-size: 0.85rem; }
+
+    /* Notice Banner */
+    .notice-box {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .notice-title {
+      font-size: 0.82rem;
+      font-weight: bold;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .notice-box ul {
+      list-style: disc;
+      padding-left: 18px;
+      margin: 0;
+      color: #e2e8f0;
+      font-size: 0.82rem;
+    }
+    .notice-box li { margin: 2px 0; }
+
+    /* Common Card & Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .card h2 { font-size: 1.05rem; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .card.lol-card h2 { color: #f0e6d2; }
+    .card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .card li { display: flex; justify-content: space-between; font-size: 0.88rem; gap: 8px; }
+    .card li span:first-child { color: var(--text-dim); flex-shrink: 0; }
+    .card li strong { text-align: right; }
+
+    .info-subgroup { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); }
+    .info-subgroup-title { font-size: 0.82rem; font-weight: bold; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+
+    /* Forms */
+    .form-group { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    label { font-size: 0.78rem; color: var(--text-dim); }
+    input, select {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 16px;
+      width: 100%;
+      height: 44px;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--primary); }
+    .submit-btn {
+      background: var(--primary);
+      color: #0f172a;
+      border: none;
+      font-weight: bold;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 0.95rem;
+      min-height: 46px;
+      margin-top: 4px;
+    }
+    .lol-theme-btn {
+      background: #c8aa6e !important;
+      color: #091428 !important;
+    }
+    .submit-btn:hover { opacity: 0.9; }
+
+    /* Progress Bar */
+    .progress-bar-bg { background: var(--border); height: 8px; border-radius: 4px; overflow: hidden; margin: 6px 0; }
+    .progress-bar-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.3s; }
+
+    /* Roster Grid */
+    .roster-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .roster-item {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .roster-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
+    .roster-num { font-size: 0.72rem; color: var(--primary); font-weight: bold; }
+    .roster-num.lol-num { color: var(--lol-gold); }
+    .roster-name { font-size: 0.9rem; font-weight: bold; word-break: break-all; margin-top: 1px; }
+    .roster-tag {
+      font-size: 0.65rem;
+      background: #1e293b;
+      color: #38bdf8;
+      padding: 2px 5px;
+      border-radius: 4px;
+      width: fit-content;
+      line-height: 1.2;
+    }
+    .roster-tag.lol-tag { color: #f0e6d2; border: 1px solid #785a28; }
+    .roster-date { font-size: 0.72rem; color: #fbbf24; font-weight: 500; }
+    .roster-subinfo { font-size: 0.68rem; color: #94a3b8; margin-top: 1px; }
+
+    /* Page Visibility Sections */
+    .game-section { display: none; }
+    .game-section.active { display: flex; flex-direction: column; gap: 14px; }
+    .page-section { display: none; }
+    .page-section.active { display: flex; flex-direction: column; gap: 14px; }
+
+    /* Rules Card */
+    .rule-card {
+      background: #162032;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .rule-card-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--accent);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .rule-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .rule-card li {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+    }
+    .rule-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      white-space: nowrap;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+    .badge-blue { background: rgba(56, 189, 248, 0.15); color: var(--primary); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Mobile Deep Fine-Tuning */
+    @media (max-width: 480px) {
+      body { padding: 10px 8px; }
+      .hero { padding: 16px 10px; }
+      .hero h1 { font-size: 1.25rem; }
+      .grid { grid-template-columns: 1fr; gap: 10px; }
+      .roster-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+      .channel-btn { font-size: 0.88rem; padding: 8px 4px; }
+      .sub-tab-btn { font-size: 0.8rem; padding: 6px 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- 화면 새로고침 방지용 보이지 않는 수신 프레임 -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
+<div class="container">
+  <!-- 최상단 메인 채널 전환 바 -->
+  <div class="top-bar">
+    <div class="game-channels">
+      <button class="channel-btn active ord-active" id="chan-ord-btn" onclick="switchGame('ord')">🏴‍☠️ 원랜디 내전</button>
+      <button class="channel-btn" id="chan-lol-btn" onclick="switchGame('lol')">⚔️ 롤(LoL) 내전</button>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- 🏴‍☠️ [1] 원랜디 내전 공간 -->
+  <!-- ======================================================= -->
+  <div id="section-ord" class="game-section active">
+    <!-- 원랜디 서브 탭 -->
+    <div class="sub-nav">
+      <button class="sub-tab-btn active" id="ord-tab-home" onclick="switchOrdPage('home')">📊 대시보드 / 신청</button>
+      <button class="sub-tab-btn" id="ord-tab-rules" onclick="switchOrdPage('rules')">📜 룰북</button>
+    </div>
+
+    <!-- 원랜디 1: 대시보드 -->
+    <div id="ord-page-home" class="page-section active">
+      <div class="hero ord-theme">
+        <h1>🏴‍☠️ 봉솜배 원랜디 소소내전</h1>
+        <p>원하는 일정을 선택해 참가 신청을 등록해주세요!</p>
+      </div>
+
+      <div class="notice-box">
+        <div class="notice-title">📢 주최자 안내사항</div>
+        <ul>
+          <li>저도 참가해서 활약할 예정입니다.</li>
+          <li>9명 이하 시 내전은 취소할게요.</li>
+          <li>대리나 노쇼하면 봉키</li>
+        </ul>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>🏆 대회 요강</h2>
+          <ul>
+            <li><span>대회 일정</span><strong>9.19(토) 오후 또는 9.20(일) 오후</strong></li>
+            <li><span>모집 인원</span><strong>최소 9명(3인 3팀) ~ 최대 12명(4인 3팀)</strong></li>
+          </ul>
+
+          <div class="info-subgroup">
+            <div class="info-subgroup-title" style="color: #fbbf24;">🎁 상품 안내</div>
+            <ul>
+              <li><span>1등팀</span><strong style="color: #fbbf24;">전원 싸이부기세트 + 배민 만원 2장 핀볼</strong></li>
+              <li><span>유카 1등상</span><strong style="color: #fbbf24;">배민 만원 (누적 유카 1위)</strong></li>
+              <li><span>참가상</span><strong>전원 베라콘깊티 핀볼 추첨 X명 상품 (위 인원도 중복 가능)</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>📊 실시간 모집 현황</h2>
+          <div style="font-size: 1.7rem; font-weight: bold; margin: 4px 0;">
+            <span id="ord-current-count">0</span> / 12명
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="ord-progress-bar"></div>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 6px;" id="ord-status-desc">
+            * 신청서가 접수되면 주최자가 명단을 등록합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- 원랜디 신청 폼 (구글 설문지 연결 완료) -->
+      <div class="card">
+        <h2>📝 참가 신청서</h2>
+        <form id="ord-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse" method="POST" target="hidden_iframe">
+          <div class="grid">
+            <div class="form-group">
+              <label for="ord-username">이름 (닉네임)</label>
+              <input type="text" id="ord-username" name="entry.1005178226" placeholder="예: 홍길동(루피짱)" required>
+            </div>
+            <div class="form-group">
+              <label for="ord-date-select">참가 가능 일자</label>
+              <select id="ord-date-select" name="entry.947317113" required>
+                <option value="9.19(토)">9.19(토) 오후 15:00~</option>
+                <option value="9.20(일)">9.20(일) 오후 15:00~</option>
+                <option value="양일 모두 가능">9.19(토) / 9.20(일) 둘 다 가능</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="ord-tier-select">원랜디 실력 (클리어 기준)</label>
+            <select id="ord-tier-select" name="entry.251794876">
+              <option value="1티어 : 악몽 90% 클리어">1티어 : 악몽 90% 클리어</option>
+              <option value="2티어 : 악몽 50% 클리어">2티어 : 악몽 50% 클리어</option>
+              <option value="3티어 : 악몽 가끔 클리어">3티어 : 악몽 가끔 클리어</option>
+              <option value="4티어 : 악몽 연습 중">4티어 : 악몽 연습 중</option>
+            </select>
+          </div>
+          <button type="submit" class="submit-btn" id="ord-submit-btn">참가 신청하기</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>👥 확정 참가자 목록</h2>
+        <div class="roster-grid" id="ord-roster-list"></div>
+      </div>
+    </div>
+
+    <!-- 원랜디 2: 룰북 -->
+    <div id="ord-page-rules" class="page-section">
+      <div class="card" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <h2 style="font-size: 1.15rem; color: #fbbf24; margin-bottom: 2px;">📜 봉솜배 원랜디 내전 룰북</h2>
+          <p style="color: var(--text-dim); font-size: 0.78rem;">내전 진행 및 순위 산정 기준을 숙지해주세요.</p>
+        </div>
+
+        <div class="notice-box">
+          <div class="notice-title">📢 공지사항</div>
+          <ul>
+            <li>룰 추가나 변경 피드백 환영합니다!</li>
+          </ul>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span>⚔️ 1. 기본 진행 규정</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-blue">난이도</span>
+              <span>전 경기 기본 <strong>악몽(Nightmare)</strong> 난이도로 진행합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-blue">음성 및 중계</span>
+              <span>모든 참가자는 <strong>디스코드 통화방</strong>에 필수로 참여하며, 팀원 중 <strong>최소 1명은 화면 공유(화공)</strong>를 진행해야 합니다.</span>
+            </li>
+            <li> 
+              <span class="rule-badge badge-blue">다상위 금지</span>
+              <span>다상위는 <strong>금지</strong>입니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-blue">경기 수</span>
+              <span>각 팀당 총 <strong>2판씩 연속으로 진행</strong>합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-amber">필수 룰</span>
+              <span>매 판마다 팀원 중 한 명은 <strong>반드시 마법 대미지(마딜) 체제</strong>를 가야 합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-red">밸런스</span>
+              <span>밸붕급 전력은 추가 유카 패널티가 있을 수 있습니다 (ex. 조아용).</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span>📊 2. 점수 및 순위 산정 기준</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-amber">합산 점수</span>
+              <span>진행된 2판 동안 팀원들이 기록한 <strong>유닛 카운트(유카)를 모두 합산</strong>하여 팀 점수를 매깁니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-red">클리어 실패 시</span>
+              <span>중간 탈락(스토리/라운드 폭사)으로 클리어에 실패한 인원은 해당 판 <strong>50점으로 기본 처리</strong>됩니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-blue">최종 순위</span>
+              <span>2판 누적 팀 점수가 <strong>가장 낮은 팀 순서</strong>로 최종 등수가 결정됩니다. (유카가 적을수록 상위권)</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span>👥 3. 팀 드래프트 및 일정 안내</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-blue">팀 빌딩</span>
+              <span>신청자 12명의 일정 투표 결과를 바탕으로 최종 일정을 확정한 뒤, 실력 밸런스를 고려한 <strong>드래프트 방식</strong>으로 팀을 구성합니다.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- ⚔️ [2] 롤(LoL) 내전 공간 -->
+  <!-- ======================================================= -->
+  <div id="section-lol" class="game-section">
+    <!-- 롤 서브 탭 -->
+    <div class="sub-nav">
+      <button class="sub-tab-btn active" id="lol-tab-home" onclick="switchLolPage('home')">📊 대시보드 / 신청</button>
+      <button class="sub-tab-btn" id="lol-tab-rules" onclick="switchLolPage('rules')">📜 룰북</button>
+    </div>
+
+    <!-- 롤 1: 대시보드 -->
+    <div id="lol-page-home" class="page-section active">
+      <div class="hero lol-theme">
+        <h1>⚔️ 봉솜배 아레나 소소내전</h1>
+        <p>아레나에서 펼쳐지는 맞대결! 참가 신청을 등록해주세요.</p>
+      </div>
+
+      <div class="notice-box" style="border-left-color: var(--lol-gold); background: rgba(200, 155, 60, 0.1);">
+        <div class="notice-title" style="color: var(--lol-gold);">📢 아레나 내전 안내사항</div>
+        <ul>
+          <li>3인 1팀 구성으로 최소 12명, 최대 18명까지 진행합니다.</li>
+          <li>게임은 총 3판을 진행하며 일반픽 1판, 랜덤픽 1판, 일반픽 1판 순으로 진행합니다.</li>
+          <li>랜덤전 챔프살 게임 머니 정도는 있으셔야 합니다.</li>
+          <li>노쇼 및 대리는 봉키입니다.</li>
+        </ul>
+      </div>
+
+      <div class="grid">
+        <div class="card lol-card">
+          <h2>🏆 대회 요강</h2>
+          <ul>
+            <li><span>대회 모드</span><strong>롤 아레나 모드 (3인 1팀)</strong></li>
+            <li><span>모집 인원</span><strong>최소 12명, 최대 18명</strong></li>
+            <li><span>일정</span><strong>킹 노래자랑 전 9.13(일) 오후 5시 30분</strong></li>
+          </ul>
+
+          <div class="info-subgroup">
+            <div class="info-subgroup-title" style="color: var(--lol-gold);">🎁 상품 안내</div>
+            <ul>
+              <li><span>우승팀</span><strong style="color: #fbbf24;">전원 싸이부기 세트</strong></li>            
+              <li><span>판당 1위 예측상</span><strong>판당 1등 맞춘 인원 베라콘깊티 핀볼 추첨 (총 3명)</strong></li>
+              <li><span>우승팀 예측상</span><strong style="color: #fbbf24;">맞춘 인원 베라콘깊티 핀볼 1명 추첨</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="card lol-card">
+          <h2>📊 실시간 모집 현황</h2>
+          <div style="font-size: 1.7rem; font-weight: bold; margin: 4px 0; color: var(--lol-gold);">
+            <span id="lol-current-count">0</span> / 18명
+          </div>
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="lol-progress-bar" style="background: var(--lol-gold);"></div>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-dim); margin-top: 6px;">
+            * 모집 마감 후 드래프트 형태로 팀을 구성합니다.
+          </p>
+        </div>
+      </div>
+
+      <!-- 롤(아레나) 참가 신청서 (구글 설문지 연결 완료) -->
+      <div class="card lol-card">
+        <h2>📝 아레나 내전 참가 신청서</h2>
+        <form id="lol-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse" method="POST" target="hidden_iframe">
+          <div class="grid">
+            <!-- 1. 닉네임 -->
+            <div class="form-group">
+              <label for="lol-username">1. 닉네임</label>
+              <input type="text" id="lol-username" name="entry.1107934902" placeholder="예: 숨지마라#KR1" required>
+            </div>
+
+            <!-- 2. 현실력 -->
+            <div class="form-group">
+              <label for="lol-tier-select">2. 현실력</label>
+              <select id="lol-tier-select" name="entry.1050760049" required>
+                <option value="1티어 : 싸이밸">1티어 : 싸이밸</option>
+                <option value="2티어 : 붱이밸">2티어 : 붱이밸</option>
+                <option value="3티어 : 봉솜밸">3티어 : 봉솜밸</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid">
+            <!-- 3. 아레나 숙련도 -->
+            <div class="form-group">
+              <label for="lol-exp-select">3. 아레나 숙련도</label>
+              <select id="lol-exp-select" name="entry.2004063463" required>
+                <option value="높음">높음</option>
+                <option value="보통">보통</option>
+                <option value="낮음">낮음</option>
+              </select>
+            </div>
+
+            <!-- 4. 챔프폭 -->
+            <div class="form-group">
+              <label for="lol-pool-select">4. 챔프폭</label>
+              <select id="lol-pool-select" name="entry.692184125" required>
+                <option value="넓음">넓음</option>
+                <option value="보통">보통</option>
+                <option value="좁음">좁음</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn lol-theme-btn" id="lol-submit-btn">아레나 내전 참가 신청하기</button>
+        </form>
+      </div>
+
+      <div class="card lol-card">
+        <h2>👥 롤 확정 참가자 목록</h2>
+        <div class="roster-grid" id="lol-roster-list"></div>
+      </div>
+    </div>
+
+    <!-- 롤 2: 룰북 -->
+    <div id="lol-page-rules" class="page-section">
+      <div class="card" style="display: flex; flex-direction: column; gap: 12px;">
+        <div style="border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+          <h2 style="font-size: 1.15rem; color: var(--lol-gold); margin-bottom: 2px;">📜 봉솜배 아레나 내전 룰북</h2>
+          <p style="color: var(--text-dim); font-size: 0.78rem;">공정한 경기 진행과 순위 산정을 위한 세부 규정입니다.</p>
+        </div>
+
+        <div class="notice-box" style="border-left-color: var(--lol-gold); background: rgba(200, 155, 60, 0.1);">
+          <div class="notice-title" style="color: var(--lol-gold);">📢 공지사항</div>
+          <ul>
+            <li>경기 전 디스코드 음성 채널 입장은 필수입니다.</li>
+            <li>드래프트 후 각 판 시작 전 모두 1위 팀을 예측합니다 (디스코드 채팅 기재).</li>
+          </ul>
+        </div>
+
+        <!-- 1. 경기 진행 방식 -->
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span style="color: var(--lol-gold);">⚔️ 1. 게임 진행 및 픽 방식</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-blue">진행 순서</span>
+              <span>게임은 <strong>일반픽 1판 ➔ 랜덤픽 1판 ➔ 일반픽 1판</strong> 순서로 총 3판 진행합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-blue">일반픽 규정</span>
+              <span>일반픽 진행 시 용기 등 인게임 내 자유 선택이 가능합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-amber">랜덤픽 규칙</span>
+              <span>인당 총 <strong>2개의 랜덤픽</strong>이 주어지며, 팀 회의를 거쳐 각자 2개 중 1개의 챔피언을 선택합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-red">랜덤픽 제한</span>
+              <span>랜덤픽 챔피언 선택은 반드시 <strong>픽창에 들어가기 전에 완료</strong>해야 합니다.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 2. 순위 산정 및 동률 규정 -->
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span style="color: var(--lol-gold);">📊 2. 점수 및 순위 산정 기준</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-blue">점수 부여</span>
+              <span>각 판 등수로 점수를 부여하며, <strong>3판 총합 등수가 가장 낮은 팀</strong>이 최종 우승합니다. (낮을수록 상위권)</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-amber">동률 (2팀)</span>
+              <span>동률이 2팀 발생할 경우, <strong>팀 vs 팀 1대1 탑 라인전 3판 2선승제</strong>로 최종 우승팀을 결정합니다. (팀원 전원 참여 필수)</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-amber">동률 출전</span>
+              <span>라인전 각 판의 출전 인원은 <strong>3, 2, 1 신호에 따라 팀장이 동시에 발표</strong>합니다.</span>
+            </li>
+            <li>
+              <span class="rule-badge badge-red">동률 (3팀 이상)</span>
+              <span>동률이 2팀 이상일 경우, <strong>핀볼 추첨으로 진출할 2팀을 먼저 정한 후</strong> 1대1 라인전을 진행합니다.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 3. 팀 구성 안내 -->
+        <div class="rule-card">
+          <div class="rule-card-header">
+            <span style="color: var(--lol-gold);">👥 3. 팀 구성 방식</span>
+          </div>
+          <ul>
+            <li>
+              <span class="rule-badge badge-blue">팀 빌딩</span>
+              <span>티어 및 실력 밸런스를 고려하여 <strong>드래프트 방식</strong>으로 3인 1팀을 공정하게 구성합니다.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const MAX_ORD_PLAYERS = 12;
+  const MAX_LOL_PLAYERS = 18;
+
+  // ==========================================
+  // 👥 [원랜디 확정 참가자 명단] (8명)
+  // ==========================================
+  let ordPlayers = [
+    { name: "봉솜띵챈", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
+    { name: "챈맘", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
+    { name: "무지부", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
+    { name: "니공주니", date: "9.19(토)", tier: "3티어 : 악몽 가끔 클리어" },
+    { name: "깐다현", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }, 
+    { name: "요들", date: "양일 모두 가능", tier: "4티어 : 악몽 연습 중" },  
+    { name: "이상호", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }, 
+    { name: "애퀴", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }
+  ];
+
+  // ==========================================
+  // 👥 [롤(아레나) 내전 확정 참가자 명단] (6명)
+  // ==========================================
+  let lolPlayers = [
+    { name: "봉솜띵챈", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "보통" },
+    { name: "쁘이", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "좁음" },
+    { name: "햇뵹이", tier: "3티어 : 봉솜밸", exp: "보통", pool: "보통" },
+    { name: "챈맘", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "넓음" },
+    { name: "봉주먹", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "좁음" },
+    { name: "싸이", tier: "1티어 : 봉솜밸", exp: "높음", pool: "넓음" }
+  ];
+
+  // 메인 채널 전환
+  function switchGame(game) {
+    document.getElementById('chan-ord-btn').className = 'channel-btn' + (game === 'ord' ? ' active ord-active' : '');
+    document.getElementById('chan-lol-btn').className = 'channel-btn' + (game === 'lol' ? ' active lol-active' : '');
+
+    document.getElementById('section-ord').className = 'game-section' + (game === 'ord' ? ' active' : '');
+    document.getElementById('section-lol').className = 'game-section' + (game === 'lol' ? ' active' : '');
+  }
+
+  // 원랜디 서브 탭 전환
+  function switchOrdPage(page) {
+    document.getElementById('ord-tab-home').className = 'sub-tab-btn' + (page === 'home' ? ' active' : '');
+    document.getElementById('ord-tab-rules').className = 'sub-tab-btn' + (page === 'rules' ? ' active' : '');
+
+    document.getElementById('ord-page-home').className = 'page-section' + (page === 'home' ? ' active' : '');
+    document.getElementById('ord-page-rules').className = 'page-section' + (page === 'rules' ? ' active' : '');
+  }
+
+  // 롤 서브 탭 전환
+  function switchLolPage(page) {
+    document.getElementById('lol-tab-home').className = 'sub-tab-btn' + (page === 'home' ? ' active' : '');
+    document.getElementById('lol-tab-rules').className = 'sub-tab-btn' + (page === 'rules' ? ' active' : '');
+
+    document.getElementById('lol-page-home').className = 'page-section' + (page === 'home' ? ' active' : '');
+    document.getElementById('lol-page-rules').className = 'page-section' + (page === 'rules' ? ' active' : '');
+  }
+
+  function renderOrd() {
+    document.getElementById('ord-current-count').textContent = ordPlayers.length;
+    document.getElementById('ord-progress-bar').style.width = (ordPlayers.length / MAX_ORD_PLAYERS * 100) + '%';
+
+    const list = document.getElementById('ord-roster-list');
+    list.innerHTML = '';
+    if (ordPlayers.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-dim); font-size: 0.82rem; grid-column: 1 / -1; text-align: center; padding: 18px 0;">아직 등록된 참가자가 없습니다.</div>';
+    } else {
+      ordPlayers.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'roster-item';
+        item.innerHTML = `
+          <div class="roster-header">
+            <span class="roster-num">#${idx + 1}</span>
+            <span class="roster-tag">${p.tier}</span>
+          </div>
+          <div class="roster-name">${p.name}</div>
+          <div class="roster-date">📅 ${p.date}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    const btn = document.getElementById('ord-submit-btn');
+    if (ordPlayers.length >= MAX_ORD_PLAYERS) {
+      btn.disabled = true;
+      btn.textContent = '원랜디 인원이 마감되었습니다 (12/12)';
+      btn.style.background = '#475569';
+      btn.style.cursor = 'not-allowed';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '참가 신청하기';
+      btn.style.background = 'var(--primary)';
+      btn.style.cursor = 'pointer';
+    }
+  }
+
+  function renderLol() {
+    document.getElementById('lol-current-count').textContent = lolPlayers.length;
+    document.getElementById('lol-progress-bar').style.width = (lolPlayers.length / MAX_LOL_PLAYERS * 100) + '%';
+
+    const list = document.getElementById('lol-roster-list');
+    list.innerHTML = '';
+    if (lolPlayers.length === 0) {
+      list.innerHTML = '<div style="color: var(--text-dim); font-size: 0.82rem; grid-column: 1 / -1; text-align: center; padding: 18px 0;">아직 등록된 롤 참가자가 없습니다. 위 신청서로 신청해주세요!</div>';
+    } else {
+      lolPlayers.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'roster-item';
+        item.innerHTML = `
+          <div class="roster-header">
+            <span class="roster-num lol-num">#${idx + 1}</span>
+            <span class="roster-tag lol-tag">${p.tier}</span>
+          </div>
+          <div class="roster-name">${p.name}</div>
+          <div class="roster-subinfo">${p.exp || ''} / ${p.pool || ''}</div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    const btn = document.getElementById('lol-submit-btn');
+    if (lolPlayers.length >= MAX_LOL_PLAYERS) {
+      btn.disabled = true;
+      btn.textContent = '아레나 참가 인원이 마감되었습니다 (' + MAX_LOL_PLAYERS + '/' + MAX_LOL_PLAYERS + ')';
+      btn.style.background = '#475569';
+      btn.style.cursor = 'not-allowed';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '아레나 내전 참가 신청하기';
+      btn.style.background = '#c8aa6e';
+      btn.style.cursor = 'pointer';
+    }
+  }
+
+  // 구글 설문지 전송 처리
+  document.getElementById('ord-apply-form').addEventListener('submit', function() {
+    alert("원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+    setTimeout(() => {
+      this.reset();
+    }, 500);
+  });
+
+  document.getElementById('lol-apply-form').addEventListener('submit', function() {
+    alert("아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+    setTimeout(() => {
+      this.reset();
+    }, 500);
+  });
+
+  renderOrd();
+  renderLol();
+</script>
+
+</body>
+</html>
