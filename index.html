@@ -287,7 +287,6 @@
 </head>
 <body>
 
-<!-- 구글 폼 응답을 조용히 받아주는 숨김 프레임 (필수) -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <div class="container">
@@ -299,16 +298,13 @@
     </div>
   </div>
 
-  <!-- ======================================================= -->
   <!-- 🏴‍☠️ [1] 원랜디 내전 공간 -->
-  <!-- ======================================================= -->
   <div id="section-ord" class="game-section active">
     <div class="sub-nav">
       <button class="sub-tab-btn active" id="ord-tab-home" onclick="switchOrdPage('home')">📊 대시보드 / 신청</button>
       <button class="sub-tab-btn" id="ord-tab-rules" onclick="switchOrdPage('rules')">📜 룰북</button>
     </div>
 
-    <!-- 원랜디 1: 대시보드 -->
     <div id="ord-page-home" class="page-section active">
       <div class="hero ord-theme">
         <h1>🏴‍☠️ 봉솜배 원랜디 소소내전</h1>
@@ -356,7 +352,7 @@
         </div>
       </div>
 
-      <!-- 원랜디 신청 폼 -->
+      <!-- 원랜디 신청 폼 (구글 폼 옵션 값 정확히 일치) -->
       <div class="card">
         <h2>📝 참가 신청서</h2>
         <form id="ord-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse" method="POST" target="hidden_iframe">
@@ -475,16 +471,13 @@
     </div>
   </div>
 
-  <!-- ======================================================= -->
   <!-- ⚔️ [2] 롤(LoL) 내전 공간 -->
-  <!-- ======================================================= -->
   <div id="section-lol" class="game-section">
     <div class="sub-nav">
       <button class="sub-tab-btn active" id="lol-tab-home" onclick="switchLolPage('home')">📊 대시보드 / 신청</button>
       <button class="sub-tab-btn" id="lol-tab-rules" onclick="switchLolPage('rules')">📜 룰북</button>
     </div>
 
-    <!-- 롤 1: 대시보드 -->
     <div id="lol-page-home" class="page-section active">
       <div class="hero lol-theme">
         <h1>⚔️ 봉솜배 아레나 소소내전</h1>
@@ -534,7 +527,7 @@
         </div>
       </div>
 
-      <!-- 롤(아레나) 참가 신청서 -->
+      <!-- 롤(아레나) 참가 신청서 (구글 폼 옵션 값 정확히 일치) -->
       <div class="card lol-card">
         <h2>📝 아레나 내전 참가 신청서</h2>
         <form id="lol-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse" method="POST" target="hidden_iframe">
@@ -666,7 +659,6 @@
   const MAX_ORD_PLAYERS = 12;
   const MAX_LOL_PLAYERS = 18;
 
-  // 👥 [원랜디 확정 참가자 명단] (8명)
   let ordPlayers = [
     { name: "봉솜띵챈", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
     { name: "챈맘", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
@@ -678,7 +670,6 @@
     { name: "애퀴", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }
   ];
 
-  // 👥 [롤(아레나) 내전 확정 참가자 명단] (6명)
   let lolPlayers = [
     { name: "봉솜띵챈", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "보통" },
     { name: "쁘이", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "좁음" },
@@ -788,7 +779,7 @@
     }
   }
 
-  // 폼 전송 이벤트 (숨김 iframe 전송 방식)
+  // 폼 제출 완료 감지
   let submittedForm = null;
 
   document.getElementById('hidden_iframe').onload = function() {
