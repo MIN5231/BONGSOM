@@ -274,7 +274,6 @@
     .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent); border: 1px solid rgba(245, 158, 11, 0.3); }
     .badge-red { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 
-    /* Mobile Deep Fine-Tuning */
     @media (max-width: 480px) {
       body { padding: 10px 8px; }
       .hero { padding: 16px 10px; }
@@ -288,11 +287,11 @@
 </head>
 <body>
 
-<!-- 화면 새로고침 방지용 보이지 않는 수신 프레임 -->
+<!-- 구글 폼 응답을 조용히 받아주는 숨김 프레임 (필수) -->
 <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
 
 <div class="container">
-  <!-- 최상단 메인 채널 전환 바 -->
+  <!-- 메인 채널 전환 바 -->
   <div class="top-bar">
     <div class="game-channels">
       <button class="channel-btn active ord-active" id="chan-ord-btn" onclick="switchGame('ord')">🏴‍☠️ 원랜디 내전</button>
@@ -304,7 +303,6 @@
   <!-- 🏴‍☠️ [1] 원랜디 내전 공간 -->
   <!-- ======================================================= -->
   <div id="section-ord" class="game-section active">
-    <!-- 원랜디 서브 탭 -->
     <div class="sub-nav">
       <button class="sub-tab-btn active" id="ord-tab-home" onclick="switchOrdPage('home')">📊 대시보드 / 신청</button>
       <button class="sub-tab-btn" id="ord-tab-rules" onclick="switchOrdPage('rules')">📜 룰북</button>
@@ -358,7 +356,7 @@
         </div>
       </div>
 
-      <!-- 원랜디 신청 폼 (구글 설문지 연결 완료) -->
+      <!-- 원랜디 신청 폼 -->
       <div class="card">
         <h2>📝 참가 신청서</h2>
         <form id="ord-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse" method="POST" target="hidden_iframe">
@@ -481,7 +479,6 @@
   <!-- ⚔️ [2] 롤(LoL) 내전 공간 -->
   <!-- ======================================================= -->
   <div id="section-lol" class="game-section">
-    <!-- 롤 서브 탭 -->
     <div class="sub-nav">
       <button class="sub-tab-btn active" id="lol-tab-home" onclick="switchLolPage('home')">📊 대시보드 / 신청</button>
       <button class="sub-tab-btn" id="lol-tab-rules" onclick="switchLolPage('rules')">📜 룰북</button>
@@ -537,18 +534,15 @@
         </div>
       </div>
 
-      <!-- 롤(아레나) 참가 신청서 (구글 설문지 연결 완료) -->
+      <!-- 롤(아레나) 참가 신청서 -->
       <div class="card lol-card">
         <h2>📝 아레나 내전 참가 신청서</h2>
         <form id="lol-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse" method="POST" target="hidden_iframe">
           <div class="grid">
-            <!-- 1. 닉네임 -->
             <div class="form-group">
               <label for="lol-username">1. 닉네임</label>
               <input type="text" id="lol-username" name="entry.1107934902" placeholder="예: 숨지마라#KR1" required>
             </div>
-
-            <!-- 2. 현실력 -->
             <div class="form-group">
               <label for="lol-tier-select">2. 현실력</label>
               <select id="lol-tier-select" name="entry.1050760049" required>
@@ -560,7 +554,6 @@
           </div>
 
           <div class="grid">
-            <!-- 3. 아레나 숙련도 -->
             <div class="form-group">
               <label for="lol-exp-select">3. 아레나 숙련도</label>
               <select id="lol-exp-select" name="entry.2004063463" required>
@@ -569,8 +562,6 @@
                 <option value="낮음">낮음</option>
               </select>
             </div>
-
-            <!-- 4. 챔프폭 -->
             <div class="form-group">
               <label for="lol-pool-select">4. 챔프폭</label>
               <select id="lol-pool-select" name="entry.692184125" required>
@@ -607,7 +598,6 @@
           </ul>
         </div>
 
-        <!-- 1. 경기 진행 방식 -->
         <div class="rule-card">
           <div class="rule-card-header">
             <span style="color: var(--lol-gold);">⚔️ 1. 게임 진행 및 픽 방식</span>
@@ -632,7 +622,6 @@
           </ul>
         </div>
 
-        <!-- 2. 순위 산정 및 동률 규정 -->
         <div class="rule-card">
           <div class="rule-card-header">
             <span style="color: var(--lol-gold);">📊 2. 점수 및 순위 산정 기준</span>
@@ -657,7 +646,6 @@
           </ul>
         </div>
 
-        <!-- 3. 팀 구성 안내 -->
         <div class="rule-card">
           <div class="rule-card-header">
             <span style="color: var(--lol-gold);">👥 3. 팀 구성 방식</span>
@@ -678,9 +666,7 @@
   const MAX_ORD_PLAYERS = 12;
   const MAX_LOL_PLAYERS = 18;
 
-  // ==========================================
   // 👥 [원랜디 확정 참가자 명단] (8명)
-  // ==========================================
   let ordPlayers = [
     { name: "봉솜띵챈", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
     { name: "챈맘", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
@@ -692,9 +678,7 @@
     { name: "애퀴", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }
   ];
 
-  // ==========================================
   // 👥 [롤(아레나) 내전 확정 참가자 명단] (6명)
-  // ==========================================
   let lolPlayers = [
     { name: "봉솜띵챈", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "보통" },
     { name: "쁘이", tier: "3티어 : 봉솜밸", exp: "낮음", pool: "좁음" },
@@ -704,7 +688,6 @@
     { name: "싸이", tier: "1티어 : 봉솜밸", exp: "높음", pool: "넓음" }
   ];
 
-  // 메인 채널 전환
   function switchGame(game) {
     document.getElementById('chan-ord-btn').className = 'channel-btn' + (game === 'ord' ? ' active ord-active' : '');
     document.getElementById('chan-lol-btn').className = 'channel-btn' + (game === 'lol' ? ' active lol-active' : '');
@@ -713,7 +696,6 @@
     document.getElementById('section-lol').className = 'game-section' + (game === 'lol' ? ' active' : '');
   }
 
-  // 원랜디 서브 탭 전환
   function switchOrdPage(page) {
     document.getElementById('ord-tab-home').className = 'sub-tab-btn' + (page === 'home' ? ' active' : '');
     document.getElementById('ord-tab-rules').className = 'sub-tab-btn' + (page === 'rules' ? ' active' : '');
@@ -722,7 +704,6 @@
     document.getElementById('ord-page-rules').className = 'page-section' + (page === 'rules' ? ' active' : '');
   }
 
-  // 롤 서브 탭 전환
   function switchLolPage(page) {
     document.getElementById('lol-tab-home').className = 'sub-tab-btn' + (page === 'home' ? ' active' : '');
     document.getElementById('lol-tab-rules').className = 'sub-tab-btn' + (page === 'rules' ? ' active' : '');
@@ -807,11 +788,9 @@
     }
   }
 
-  // 구글 설문지 no-cors 백그라운드 전송 (원랜디)
-  // 폼 제출 완료 감지용 플래그
+  // 폼 전송 이벤트 (숨김 iframe 전송 방식)
   let submittedForm = null;
 
-  // 숨겨진 iframe이 구글 전송을 완료했을 때 알림을 띄우고 입력창을 초기화
   document.getElementById('hidden_iframe').onload = function() {
     if (submittedForm === 'ord') {
       alert("원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
@@ -824,12 +803,10 @@
     }
   };
 
-  // 원랜디 폼 제출 트리거
   document.getElementById('ord-apply-form').addEventListener('submit', function() {
     submittedForm = 'ord';
   });
 
-  // 롤 아레나 폼 제출 트리거
   document.getElementById('lol-apply-form').addEventListener('submit', function() {
     submittedForm = 'lol';
   });
