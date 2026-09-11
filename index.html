@@ -177,12 +177,14 @@
       font-size: 0.95rem;
       min-height: 46px;
       margin-top: 4px;
+      transition: opacity 0.2s;
     }
     .lol-theme-btn {
       background: #c8aa6e !important;
       color: #091428 !important;
     }
     .submit-btn:hover { opacity: 0.9; }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
     /* Progress Bar */
     .progress-bar-bg { background: var(--border); height: 8px; border-radius: 4px; overflow: hidden; margin: 6px 0; }
@@ -287,9 +289,6 @@
 </head>
 <body>
 
-<!-- 구글 응답을 받아주는 숨김 프레임 (브라우저 차단 완벽 우회) -->
-<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
-
 <div class="container">
   <!-- 메인 채널 전환 바 -->
   <div class="top-bar">
@@ -353,18 +352,19 @@
         </div>
       </div>
 
-      <!-- 원랜디 신청 폼 (HTML 순수 POST 방식 적용) -->
+      <!-- 원랜디 신청 폼 (Formspree 연동) -->
       <div class="card">
         <h2>📝 참가 신청서</h2>
-        <form id="ord-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse" method="POST" target="hidden_iframe">
+        <form id="ord-apply-form">
+          <input type="hidden" name="대회구분" value="원랜디 내전">
           <div class="grid">
             <div class="form-group">
               <label for="ord-username">이름 (닉네임)</label>
-              <input type="text" id="ord-username" name="entry.1005178226" placeholder="예: 홍길동(루피짱)" required>
+              <input type="text" id="ord-username" name="이름_닉네임" placeholder="예: 홍길동(루피짱)" required>
             </div>
             <div class="form-group">
               <label for="ord-date-select">참가 가능 일자</label>
-              <select id="ord-date-select" name="entry.947317113" required>
+              <select id="ord-date-select" name="참가가요일자" required>
                 <option value="9.19(토)">9.19(토)</option>
                 <option value="9.20(일)">9.20(일)</option>
                 <option value="양일 모두 가능">양일 모두 가능</option>
@@ -373,7 +373,7 @@
           </div>
           <div class="form-group">
             <label for="ord-tier-select">원랜디 실력 (클리어 기준)</label>
-            <select id="ord-tier-select" name="entry.251794876" required>
+            <select id="ord-tier-select" name="원랜디실력" required>
               <option value="1티어 : 악몽 90% 클리어">1티어 : 악몽 90% 클리어</option>
               <option value="2티어 : 악몽 50% 클리어">2티어 : 악몽 50% 클리어</option>
               <option value="3티어 : 악몽 가끔 클리어">3티어 : 악몽 가끔 클리어</option>
@@ -498,18 +498,19 @@
         </div>
       </div>
 
-      <!-- 롤 참가 신청서 (HTML 순수 POST 방식 적용) -->
+      <!-- 롤 참가 신청서 (Formspree 연동) -->
       <div class="card lol-card">
         <h2>📝 아레나 내전 참가 신청서</h2>
-        <form id="lol-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse" method="POST" target="hidden_iframe">
+        <form id="lol-apply-form">
+          <input type="hidden" name="대회구분" value="롤 아레나 내전">
           <div class="grid">
             <div class="form-group">
               <label for="lol-username">1. 닉네임</label>
-              <input type="text" id="lol-username" name="entry.1107934902" placeholder="예: 숨지마라#KR1" required>
+              <input type="text" id="lol-username" name="롤_닉네임" placeholder="예: 숨지마라#KR1" required>
             </div>
             <div class="form-group">
               <label for="lol-tier-select">2. 현실력</label>
-              <select id="lol-tier-select" name="entry.1050760049" required>
+              <select id="lol-tier-select" name="현실력" required>
                 <option value="1티어 : 싸이밸">1티어 : 싸이밸</option>
                 <option value="2티어 : 붱이밸">2티어 : 붱이밸</option>
                 <option value="3티어 : 봉솜밸">3티어 : 봉솜밸</option>
@@ -520,7 +521,7 @@
           <div class="grid">
             <div class="form-group">
               <label for="lol-exp-select">3. 아레나 숙련도</label>
-              <select id="lol-exp-select" name="entry.2004063463" required>
+              <select id="lol-exp-select" name="아레나_숙련도" required>
                 <option value="높음">높음</option>
                 <option value="보통">보통</option>
                 <option value="낮음">낮음</option>
@@ -528,7 +529,7 @@
             </div>
             <div class="form-group">
               <label for="lol-pool-select">4. 챔프폭</label>
-              <select id="lol-pool-select" name="entry.692184125" required>
+              <select id="lol-pool-select" name="챔프폭" required>
                 <option value="넓음">넓음</option>
                 <option value="보통">보통</option>
                 <option value="좁음">좁음</option>
@@ -602,6 +603,7 @@
 <script>
   const MAX_ORD_PLAYERS = 12;
   const MAX_LOL_PLAYERS = 18;
+  const FORMSPREE_ENDPOINT = "https://formspree.io/f/mbgjwpqy";
 
   let ordPlayers = [
     { name: "봉솜띵챈", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
@@ -678,25 +680,44 @@
     });
   }
 
-  // 순수 HTML 폼 전송 이벤트 처리 (CORS 문제 없음)
-  let isSubmitting = false;
+  // Formspree 비동기 전송 처리
+  async function handleFormSubmit(event, formEl, btnEl, originalBtnText) {
+    event.preventDefault();
+    btnEl.disabled = true;
+    btnEl.textContent = '제출 중...';
 
-  document.getElementById('hidden_iframe').addEventListener('load', function() {
-    if (isSubmitting) {
-      alert("참가 신청이 성공적으로 완료되었습니다! (시트에 자동 기록됩니다)");
-      document.getElementById('ord-apply-form').reset();
-      document.getElementById('lol-apply-form').reset();
-      isSubmitting = false;
+    const formData = new FormData(formEl);
+
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        alert('🎉 참가 신청이 정상적으로 완료되었습니다!');
+        formEl.reset();
+      } else {
+        alert('신청 접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('네트워크 연결 오류가 발생했습니다. 다시 시도해주세요.');
+    } finally {
+      btnEl.disabled = false;
+      btnEl.textContent = originalBtnText;
     }
-  });
+  }
 
-  document.getElementById('ord-apply-form').addEventListener('submit', function() {
-    isSubmitting = true;
-  });
+  const ordForm = document.getElementById('ord-apply-form');
+  const ordBtn = document.getElementById('ord-submit-btn');
+  ordForm.addEventListener('submit', (e) => handleFormSubmit(e, ordForm, ordBtn, '참가 신청하기'));
 
-  document.getElementById('lol-apply-form').addEventListener('submit', function() {
-    isSubmitting = true;
-  });
+  const lolForm = document.getElementById('lol-apply-form');
+  const lolBtn = document.getElementById('lol-submit-btn');
+  lolForm.addEventListener('submit', (e) => handleFormSubmit(e, lolForm, lolBtn, '아레나 내전 참가 신청하기'));
 
   renderOrd();
   renderLol();
