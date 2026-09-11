@@ -287,6 +287,9 @@
 </head>
 <body>
 
+<!-- 구글 응답을 받아주는 숨김 프레임 (브라우저 차단 완벽 우회) -->
+<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;"></iframe>
+
 <div class="container">
   <!-- 메인 채널 전환 바 -->
   <div class="top-bar">
@@ -350,10 +353,10 @@
         </div>
       </div>
 
-      <!-- 원랜디 신청 폼 -->
+      <!-- 원랜디 신청 폼 (HTML 순수 POST 방식 적용) -->
       <div class="card">
         <h2>📝 참가 신청서</h2>
-        <form id="ord-apply-form">
+        <form id="ord-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse" method="POST" target="hidden_iframe">
           <div class="grid">
             <div class="form-group">
               <label for="ord-username">이름 (닉네임)</label>
@@ -495,10 +498,10 @@
         </div>
       </div>
 
-      <!-- 롤 참가 신청서 -->
+      <!-- 롤 참가 신청서 (HTML 순수 POST 방식 적용) -->
       <div class="card lol-card">
         <h2>📝 아레나 내전 참가 신청서</h2>
-        <form id="lol-apply-form">
+        <form id="lol-apply-form" action="https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse" method="POST" target="hidden_iframe">
           <div class="grid">
             <div class="form-group">
               <label for="lol-username">1. 닉네임</label>
@@ -675,45 +678,24 @@
     });
   }
 
-  // 표준 URL 인코딩 전송 함수
-  function sendToGoogle(formEl, endpointUrl, successMsg) {
-    const formData = new FormData(formEl);
-    const params = new URLSearchParams();
+  // 순수 HTML 폼 전송 이벤트 처리 (CORS 문제 없음)
+  let isSubmitting = false;
 
-    for (let pair of formData.entries()) {
-      params.append(pair[0], pair[1]);
+  document.getElementById('hidden_iframe').addEventListener('load', function() {
+    if (isSubmitting) {
+      alert("참가 신청이 성공적으로 완료되었습니다! (시트에 자동 기록됩니다)");
+      document.getElementById('ord-apply-form').reset();
+      document.getElementById('lol-apply-form').reset();
+      isSubmitting = false;
     }
-
-    fetch(endpointUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: params.toString()
-    })
-    .then(() => {
-      alert(successMsg);
-      formEl.reset();
-    })
-    .catch(() => {
-      alert(successMsg);
-      formEl.reset();
-    });
-  }
-
-  // 원랜디 전송 트리거
-  document.getElementById('ord-apply-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const url = "https://docs.google.com/forms/d/e/1FAIpQLSeq9zWdgbSXNidoKvn4SHIjLi6VKDDG5S0kkygI0HQhUkJlYw/formResponse";
-    sendToGoogle(this, url, "원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
   });
 
-  // 롤 아레나 전송 트리거
-  document.getElementById('lol-apply-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const url = "https://docs.google.com/forms/d/e/1FAIpQLSfVN1wp2mXLYqTpjdfKlZp0lqkDUKYQhJMCFWrCvEj-UX6_AQ/formResponse";
-    sendToGoogle(this, url, "아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+  document.getElementById('ord-apply-form').addEventListener('submit', function() {
+    isSubmitting = true;
+  });
+
+  document.getElementById('lol-apply-form').addEventListener('submit', function() {
+    isSubmitting = true;
   });
 
   renderOrd();
