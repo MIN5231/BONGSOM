@@ -808,43 +808,30 @@
   }
 
   // 구글 설문지 no-cors 백그라운드 전송 (원랜디)
-  document.getElementById('ord-apply-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formEl = this;
-    const formData = new FormData(formEl);
+  // 폼 제출 완료 감지용 플래그
+  let submittedForm = null;
 
-    fetch(formEl.action, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
-    })
-    .then(() => {
+  // 숨겨진 iframe이 구글 전송을 완료했을 때 알림을 띄우고 입력창을 초기화
+  document.getElementById('hidden_iframe').onload = function() {
+    if (submittedForm === 'ord') {
       alert("원랜디 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
-      formEl.reset();
-    })
-    .catch(() => {
-      formEl.submit();
-    });
+      document.getElementById('ord-apply-form').reset();
+      submittedForm = null;
+    } else if (submittedForm === 'lol') {
+      alert("아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
+      document.getElementById('lol-apply-form').reset();
+      submittedForm = null;
+    }
+  };
+
+  // 원랜디 폼 제출 트리거
+  document.getElementById('ord-apply-form').addEventListener('submit', function() {
+    submittedForm = 'ord';
   });
 
-  // 구글 설문지 no-cors 백그라운드 전송 (롤 아레나)
-  document.getElementById('lol-apply-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formEl = this;
-    const formData = new FormData(formEl);
-
-    fetch(formEl.action, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: formData
-    })
-    .then(() => {
-      alert("아레나 참가 신청이 완료되었습니다! (시트에 자동 기록됩니다)");
-      formEl.reset();
-    })
-    .catch(() => {
-      formEl.submit();
-    });
+  // 롤 아레나 폼 제출 트리거
+  document.getElementById('lol-apply-form').addEventListener('submit', function() {
+    submittedForm = 'lol';
   });
 
   renderOrd();
