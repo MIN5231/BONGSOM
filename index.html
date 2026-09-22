@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
@@ -338,6 +338,7 @@
             <option value="2티어 : 악몽 50% 클리어">2티어 : 악몽 50% 클리어</option>
             <option value="3티어 : 악몽 가끔 클리어">3티어 : 악몽 가끔 클리어</option>
             <option value="4티어 : 악몽 연습 중">4티어 : 악몽 연습 중</option>
+            <option value="아가 티어 : 원랜디 유입">아가 티어 : 원랜디 유입</option>
           </select>
         </div>
         <button type="submit" class="submit-btn" id="ord-submit-btn">참가 신청하기</button>
@@ -416,6 +417,7 @@
             <tr>
               <th>순위</th>
               <th>선수명</th>
+              <th>승률</th>
               <th>총 판수</th>
               <th>평균 유카</th>
               <th>누적 유카</th>
@@ -438,20 +440,21 @@
   // 현재 내전 확정 참가자 명단
   let ordPlayers = [
     { name: "봉솜띵챈", tier: "3티어 : 악몽 가끔 클리어" }
+    { name: "햇뵹이", tier: "아가 티어 : 원랜디 유입" }
   ];
 
   // -------------------------------------------------------------
-  // 🏆 [누적 랭킹 데이터] 지난 대회 유카 기록 반영
+  // 🏆 [누적 랭킹 데이터] 지난 대회 유카 및 승률 기록 반영
   // -------------------------------------------------------------
   let historyRecords = [
-    { name: "애퀴", games: 3, totalUka: 85, bestUka: 16 },
-    { name: "상호", games: 3, totalUka: 96, bestUka: 17 },
-    { name: "무데스", games: 3, totalUka: 96, bestUka: 11 },
-    { name: "챈맘", games: 3, totalUka: 118, bestUka: 8 },
-    { name: "이얍", games: 3, totalUka: 126, bestUka: 6 },
-    { name: "봉솜", games: 3, totalUka: 130, bestUka: 30 },
-    { name: "간다현", games: 3, totalUka: 137, bestUka: 27 },
-    { name: "니겅", games: 3, totalUka: 137, bestUka: 27 }
+    { name: "애퀴", winRecord: "0승 1패 (0%)", games: 3, totalUka: 85, bestUka: 16 },
+    { name: "상호", winRecord: "1승 0패 (100%)", games: 3, totalUka: 96, bestUka: 17 },
+    { name: "무데스", winRecord: "1승 0패 (100%)", games: 3, totalUka: 96, bestUka: 11 },
+    { name: "챈맘", winRecord: "1승 0패 (100%)", games: 3, totalUka: 118, bestUka: 8 },
+    { name: "이얍", winRecord: "0승 1패 (0%)", games: 3, totalUka: 126, bestUka: 6 },
+    { name: "봉솜", winRecord: "1승 0패 (100%)", games: 3, totalUka: 130, bestUka: 30 },
+    { name: "간다현", winRecord: "0승 1패 (0%)", games: 3, totalUka: 137, bestUka: 27 },
+    { name: "니겅", winRecord: "0승 1패 (0%)", games: 3, totalUka: 137, bestUka: 27 }
   ];
 
   function switchPage(page) {
@@ -480,11 +483,18 @@
     });
   }
 
+  // 승률 텍스트에서 숫자 퍼센트(%)를 추출하는 도우미 함수
+  function parseWinRate(winRecordStr) {
+    if (!winRecordStr) return 0;
+    const match = winRecordStr.match(/\((\d+(?:\.\d+)?)\%\)/);
+    return match ? parseFloat(match[1]) : 0;
+  }
+
   function renderHistory() {
     const tbody = document.getElementById('history-table-body');
     tbody.innerHTML = '';
     
-    // 랭킹 정렬 로직 (다중 조건 적용)
+    // 랭킹 정렬 로직
     historyRecords.sort((a, b) => {
       const avgA = a.totalUka / a.games;
       const avgB = b.totalUka / b.games;
@@ -494,12 +504,19 @@
         return avgA - avgB;
       }
 
-      // 2. 평균 유카가 동률일 경우: 최고 유카 기록 비교 (낮은 순)
+      // 2. 최고 유카 기록 비교 (낮은 순)
       if (a.bestUka !== b.bestUka) {
         return a.bestUka - b.bestUka;
       }
 
-      // 3. 최고 유카마저 동률일 경우: 이름순 (가나다 오름차순)
+      // 3. 승률 비교 (높은 순)
+      const winRateA = parseWinRate(a.winRecord);
+      const winRateB = parseWinRate(b.winRecord);
+      if (winRateA !== winRateB) {
+        return winRateB - winRateA;
+      }
+
+      // 4. 이름순 (가나다 오름차순)
       return a.name.localeCompare(b.name, 'ko');
     });
 
@@ -525,6 +542,7 @@
       tr.innerHTML = `
         <td class="${rankClass}">${rankDisplay}</td>
         <td style="font-weight: bold; color: #fff;">${item.name}</td>
+        <td style="color: #38bdf8;">${item.winRecord || '0승 0패 (0%)'}</td>
         <td>${item.games}회</td>
         <td style="font-weight: bold; color: var(--primary);">${avg}</td>
         <td style="color: #cbd5e1;">${item.totalUka}</td>
