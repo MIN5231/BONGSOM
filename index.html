@@ -449,7 +449,7 @@
     { name: "챈맘", games: 3, totalUka: 118, bestUka: 8 },
     { name: "이얍", games: 3, totalUka: 126, bestUka: 6 },
     { name: "봉솜", games: 3, totalUka: 130, bestUka: 30 },
-    { name: "깐다현", games: 3, totalUka: 137, bestUka: 27 },
+    { name: "간다현", games: 3, totalUka: 137, bestUka: 27 },
     { name: "니겅", games: 3, totalUka: 137, bestUka: 27 }
   ];
 
@@ -483,8 +483,24 @@
     const tbody = document.getElementById('history-table-body');
     tbody.innerHTML = '';
     
-    // 평균 유카 기준 오름차순 정렬 (유카가 낮을수록 높은 랭킹)
-    historyRecords.sort((a, b) => (a.totalUka / a.games) - (b.totalUka / b.games));
+    // 랭킹 정렬 로직 (다중 조건 적용)
+    historyRecords.sort((a, b) => {
+      const avgA = a.totalUka / a.games;
+      const avgB = b.totalUka / b.games;
+
+      // 1. 평균 유카 비교 (낮은 순)
+      if (avgA !== avgB) {
+        return avgA - avgB;
+      }
+
+      // 2. 평균 유카가 동률일 경우: 최고 유카 기록 비교 (낮은 순)
+      if (a.bestUka !== b.bestUka) {
+        return a.bestUka - b.bestUka;
+      }
+
+      // 3. 최고 유카마저 동률일 경우: 이름순 (가나다 오름차순)
+      return a.name.localeCompare(b.name, 'ko');
+    });
 
     historyRecords.forEach((item, index) => {
       const rank = index + 1;
