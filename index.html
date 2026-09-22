@@ -167,7 +167,6 @@
       width: fit-content;
       line-height: 1.2;
     }
-    .roster-date { font-size: 0.72rem; color: #fbbf24; font-weight: 500; }
 
     /* Table Styles for Ranking Page */
     .history-table-container {
@@ -278,7 +277,7 @@
   <div id="page-home" class="page-section active">
     <div class="hero">
       <h1>🏴‍☠️ 봉솜배 원랜디 소소내전</h1>
-      <p>원하는 일정을 선택해 참가 신청을 등록해주세요!</p>
+      <p>참가 신청서를 작성해주세요!</p>
     </div>
 
     <div class="notice-box">
@@ -294,7 +293,7 @@
       <div class="card">
         <h2>🏆 대회 요강</h2>
         <ul>
-          <li><span>대회 일정</span><strong>9.19(토) 오후 또는 9.20(일) 오후</strong></li>
+          <li><span>대회 일정</span><strong>9.17(일) 오후 3시</strong></li>
           <li><span>모집 인원</span><strong>최소 9명(3인 3팀) ~ 최대 12명(4인 3팀)</strong></li>
         </ul>
 
@@ -302,7 +301,6 @@
           <div class="info-subgroup-title" style="color: #fbbf24;">🎁 상품 안내</div>
           <ul>
             <li><span>1등팀</span><strong style="color: #fbbf24;">전원 배민 만원(몰빵 핀볼 가능)</strong></li>
-          
           </ul>
         </div>
       </div>
@@ -326,20 +324,13 @@
       <h2>📝 참가 신청서</h2>
       <form id="ord-apply-form">
         <input type="hidden" name="대회구분" value="원랜디 내전">
-        <div class="grid">
-          <div class="form-group">
-            <label for="ord-username">이름 (닉네임)</label>
-            <input type="text" id="ord-username" name="이름_닉네임" placeholder="예: 홍길동(루피짱)" required>
-          </div>
-          <div class="form-group">
-            <label for="ord-date-select">참가 가능 일자</label>
-            <select id="ord-date-select" name="참가가요일자" required>
-              <option value="9.19(토)">9.19(토)</option>
-              <option value="9.20(일)">9.20(일)</option>
-              <option value="양일 모두 가능">양일 모두 가능</option>
-            </select>
-          </div>
+        <input type="hidden" name="참가일정" value="9.17(일) 오후 3시">
+        
+        <div class="form-group">
+          <label for="ord-username">이름 (닉네임)</label>
+          <input type="text" id="ord-username" name="이름_닉네임" placeholder="예: 홍길동(루피짱)" required>
         </div>
+        
         <div class="form-group">
           <label for="ord-tier-select">원랜디 실력 (클리어 기준)</label>
           <select id="ord-tier-select" name="원랜디실력" required>
@@ -404,7 +395,7 @@
           <span>👥 3. 팀 드래프트 및 일정 안내</span>
         </div>
         <ul>
-          <li><span class="rule-badge badge-blue">팀 빌딩</span><span>신청자 12명의 일정 투표 결과를 바탕으로 최종 일정을 확정한 뒤, 실력 밸런스를 고려한 <strong>드래프트 방식</strong>으로 팀을 구성합니다.</span></li>
+          <li><span class="rule-badge badge-blue">팀 빌딩</span><span>신청자들의 실력 밸런스를 고려한 <strong>드래프트 방식</strong>으로 팀을 구성합니다.</span></li>
         </ul>
       </div>
     </div>
@@ -445,28 +436,21 @@
 
   // 현재 내전 확정 참가자 명단
   let ordPlayers = [
-    { name: "봉솜띵챈", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
-    { name: "챈맘", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
-    { name: "무지부", date: "양일 모두 가능", tier: "3티어 : 악몽 가끔 클리어" },
-    { name: "니공주니", date: "9.19(토)", tier: "3티어 : 악몽 가끔 클리어" },
-    { name: "깐다현", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }, 
-    { name: "요들", date: "양일 모두 가능", tier: "4티어 : 악몽 연습 중" },  
-    { name: "이상호", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }, 
-    { name: "애퀴", date: "양일 모두 가능", tier: "1티어 : 악몽 90% 클리어" }
+    { name: "봉솜띵챈", tier: "3티어 : 악몽 가끔 클리어" }
   ];
 
   // -------------------------------------------------------------
-  // 🏆 [누적 랭킹 데이터]
-  // 주최자분이 아래 배열 데이터를 수정하시면 평균 유카 및 순위가 자동 정렬됩니다.
+  // 🏆 [누적 랭킹 데이터] 지난 대회 유카 기록 반영
   // -------------------------------------------------------------
   let historyRecords = [
-    { name: "깐다현", games: 2, totalUka: 12, bestUka: 3 },
-    { name: "이상호", games: 2, totalUka: 18, bestUka: 5 },
-    { name: "애퀴", games: 2, totalUka: 24, bestUka: 8 },
-    { name: "봉솜띵챈", games: 2, totalUka: 45, bestUka: 12 },
-    { name: "무지부", games: 2, totalUka: 58, bestUka: 20 },
-    { name: "챈맘", games: 2, totalUka: 62, bestUka: 22 },
-    { name: "요들", games: 1, totalUka: 50, bestUka: 50 }
+    { name: "애퀴", games: 3, totalUka: 85, bestUka: 16 },
+    { name: "상호", games: 3, totalUka: 96, bestUka: 17 },
+    { name: "무데스", games: 3, totalUka: 96, bestUka: 11 },
+    { name: "챈맘", games: 3, totalUka: 118, bestUka: 8 },
+    { name: "이얍", games: 3, totalUka: 126, bestUka: 6 },
+    { name: "봉솜", games: 3, totalUka: 130, bestUka: 30 },
+    { name: "깐다현", games: 3, totalUka: 137, bestUka: 27 },
+    { name: "니겅", games: 3, totalUka: 137, bestUka: 27 }
   ];
 
   function switchPage(page) {
@@ -490,7 +474,6 @@
       item.innerHTML = `
         <div class="roster-header"><span class="roster-num">#${idx + 1}</span><span class="roster-tag">${p.tier}</span></div>
         <div class="roster-name">${p.name}</div>
-        <div class="roster-date">📅 ${p.date}</div>
       `;
       list.appendChild(item);
     });
